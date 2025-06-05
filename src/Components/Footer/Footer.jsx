@@ -82,11 +82,11 @@ const Footer = () => {
         <div className="content">
           <h2 className="mb-4 text-lg font-bold text-white">{t("DownloadOurApp")}</h2>
           <div className="space-y-3">
-          <Link className="flex items-center px-4 py-2 space-x-4 transition duration-300 border border-white rounded-lg opacity-50 cursor-not-allowed hover:bg-white hover:text-mainColor">
+          <Link to="https://apps.apple.com/eg/app/lamada/id6553989792" target='_blank' className="flex items-center px-4 py-2 space-x-4 transition duration-300 border border-white rounded-lg opacity-50 cursor-not-allowed hover:bg-white hover:text-mainColor">
               <FaApple className="text-2xl" />
               <span className="text-sm">App Store</span>
             </Link>
-            <Link className="flex items-center px-4 py-2 space-x-4 transition duration-300 border border-white rounded-lg opacity-50 cursor-not-allowed hover:bg-white hover:text-mainColor">
+            <Link to="" className="flex items-center px-4 py-2 space-x-4 transition duration-300 border border-white rounded-lg opacity-50 cursor-not-allowed hover:bg-white hover:text-mainColor">
             <FaGooglePlay className="text-2xl" />
               <span className="text-sm">Google Play</span>
             </Link>

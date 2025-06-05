@@ -35,7 +35,7 @@ const NewHomePage=()=>{
                 </div>
 
                 <div className="flex gap-1 p-4 pb-0">
-                    <Link to="#" className="opacity-50 cursor-not-allowed">
+                    <Link to="https://apps.apple.com/eg/app/lamada/id6553989792" target='_blank' className="opacity-50 cursor-not-allowed">
                         <GooglePlayIcon/>
                     </Link>
                     <Link to="#" className="opacity-50 cursor-not-allowed">
