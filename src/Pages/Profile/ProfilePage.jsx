@@ -126,7 +126,7 @@ const ProfilePage = () => {
           <div className="flex items-center justify-center w-full lg:w-5/12">
             <div className="relative w-40 h-40 sm:w-52 sm:h-52 lg:w-80 lg:h-80">
               <img
-                src={data?.image_link || '/src/assets/Images/RedLogo.png'}
+                src={data?.image_link || '/src/assets/Images/Redlogo.jpg'}
                 className="w-full h-full object-cover object-center rounded-full lg:rounded-2xl border-4 border-mainColor transition-transform duration-300 hover:scale-105"
                 alt="Profile"
               />

@@ -232,8 +232,8 @@ const CheckOutPage = () => {
       ) : (
         <div className="flex flex-col items-start justify-start w-11/12 pt-4 mx-auto gap-y-4">
           <HeaderNavigate title={t("Checkout")} />
-          <DetailsOrder />
           <PaymentMethods />
+          <DetailsOrder />
           <div className="flex items-center justify-end w-full">
             <div className="">
               <SubmitButton

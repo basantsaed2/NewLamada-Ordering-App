@@ -11,7 +11,6 @@ import { setLocations, setCategories, setCheckOutDetails, setProducts, setProduc
 import { useEffect, useRef } from 'react';
 import { MaintenancePage } from './Pages/page';
 import { useTranslation } from 'react-i18next'; // <-- Importing useTranslation hook
-
 const App = () => {
 
   const user = useSelector((state) => state?.user?.data || null);
@@ -33,16 +32,16 @@ const App = () => {
   // });
 
   const { refetch: refetchCheckOutDetails, loading: loadingCheckOutDetails, data: dataCheckOutDetails } = useGet({
-    url: 'https://Lamadafoodbcknd.food2go.online/customer/order_type',
+    url:`https://Lamadafoodbcknd.food2go.online/customer/order_type?locale=${selectedLanguage}`,
   });
 
   const { refetch: refetchBannerData, loading: loadingBannerData, data: dataBanner } = useGet({
     url: 'https://Lamadafoodbcknd.food2go.online/customer/home/slider',
   });
 
-  const { refetch: refetchBranchData, loading: loadingBranchData, data: dataBranch } = useGet({
-    url: 'https://Lamadafoodbcknd.food2go.online/customer/order_type',
-  });
+  // const { refetch: refetchBranchData, loading: loadingBranchData, data: dataBranch } = useGet({
+  //   url: 'https://Lamadafoodbcknd.food2go.online/customer/order_type',
+  // });
 
   const { refetch: refetchLocations, loading: loadingLocationsData, data: dataLocations } = useGet({
     url: 'https://Lamadafoodbcknd.food2go.online/customer/address',
@@ -65,9 +64,9 @@ const App = () => {
   //   refetchProducts();
   // }, [refetchProducts]);
 
-  useEffect(() => {
-    refetchBranchData();
-  }, [refetchBranchData]);
+  // useEffect(() => {
+  //   refetchBranchData();
+  // }, [refetchBranchData]);
 
   useEffect(() => {
     refetchLocations();
@@ -148,11 +147,11 @@ const App = () => {
   }, [dataBanner]);
 
   useEffect(() => {
-    if (dataBranch && dataBranch.branches) {
-      dispatch(setBranch(dataBranch.branches));
-      console.log('Fetched Branches:', dataBranch.branches);
+    if (dataCheckOutDetails && dataCheckOutDetails.branches) {
+      dispatch(setBranch(dataCheckOutDetails.branches));
+      console.log('Fetched Branches:', dataCheckOutDetails.branches);
     }
-  }, [dataBranch]);
+  }, [dataCheckOutDetails]);
 
   useEffect(() => {
     if (dataLocations && dataLocations.addresses) {
@@ -172,7 +171,7 @@ const App = () => {
 
   return (
     <PrimeReactProvider>
-      {loadingSignUp ||loadingCheckOutDetails || loadingBannerData || loadingBranchData || loadingLocationsData || loadingLanguageData ? (
+      {loadingSignUp ||loadingCheckOutDetails || loadingBannerData || loadingLocationsData || loadingLanguageData ? (
         <div className="flex items-center justify-center w-full h-screen">
           <LoaderLogin />
         </div>

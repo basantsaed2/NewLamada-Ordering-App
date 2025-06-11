@@ -13,7 +13,7 @@ const LoaderLogin = () => {
               <div>
                      <div className={`w-full h-full flex flex-col justify-center items-center`}>
                             <img src={logo} width={250} height={250} alt="Logo" />
-                            <PulseLoader color='#c3171c' size={20} />
+                            <PulseLoader color='#d7030b' size={20} />
                      </div>
 
                       <div className="flex items-center justify-center gap-2 py-4 mt-10 border-t border-gray-300">

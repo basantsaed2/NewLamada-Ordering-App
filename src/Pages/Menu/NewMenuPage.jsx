@@ -3,11 +3,10 @@ import m from "../../assets/Images/m.jpeg";
 import m1 from "../../assets/Images/m1.jpg";
 import m2 from "../../assets/Images/m2.jpg";
 import m3 from "../../assets/Images/m3.jpg";
-
 import { AiOutlineClose, AiOutlineLeft, AiOutlineRight } from "react-icons/ai"; // Importing icons
 import { useTranslation } from 'react-i18next'; // <-- Importing useTranslation hook
 
-const menuImages = [m, m1,m2,m3,]; // Array of menu images
+const menuImages = [m,m1,m2,m3];
 
 const NewMenuPage = () => {
   const [selectedIndex, setSelectedIndex] = useState(null);

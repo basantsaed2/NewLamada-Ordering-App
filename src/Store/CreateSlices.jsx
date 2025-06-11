@@ -169,36 +169,115 @@ const categoriesSlice = createSlice({
        },
 });
 /* Products Card */
-const productsCardSlice = createSlice({
-       name: "productsCard",
-       initialState: initialProductsCard, // Use the corrected initial state
-       reducers: {
-              setProductsCard: (state, action) => {
-                     console.log("Setting Products Card:", action.payload);
-                     state.data = [...state.data, action.payload]; // Append the new product to the array
-              },
-              UpdateProductCard: (state, action) => {
+// const productsCardSlice = createSlice({
+//        name: "productsCard",
+//        initialState: initialProductsCard, // Use the corrected initial state
+//        reducers: {
+//               setProductsCard: (state, action) => {
+//                      console.log("Setting Products Card:", action.payload);
+//                      state.data = [...state.data, action.payload]; // Append the new product to the array
+//               },
+//               UpdateProductCard: (state, action) => {
 
-                     console.log("Updating Products Card:", action.payload);
-                     state.data = state.data.map(product => {
-                            if (product.numberId === action.payload.numberId) {
-                                   return { ...product, ...action.payload };
-                            }
-                            return product;
-                     });
-              },
-              removeProductsCard: (state, action) => {
+//                      console.log("Updating Products Card:", action.payload);
+//                      state.data = state.data.map(product => {
+//                             if (product.numberId === action.payload.numberId) {
+//                                    return { ...product, ...action.payload };
+//                             }
+//                             return product;
+//                      });
+//               },
+//               removeProductsCard: (state, action) => {
                      
-                     console.log("Before Remove:", state.data);
-                     state.data = state.data.filter(product => product.numberId !== action.payload);
-                     console.log("After Remove:", state.data);
-                 },
-              removeAllProductsCard: (state) => {
-                     console.log("Removing All Products Card");
-                     state.data = [];
-              },
-       },
+//                      console.log("Before Remove:", state.data);
+//                      state.data = state.data.filter(product => product.numberId !== action.payload);
+//                      console.log("After Remove:", state.data);
+//                  },
+//               removeAllProductsCard: (state) => {
+//                      console.log("Removing All Products Card");
+//                      state.data = [];
+//               },
+//        },
+// });
+
+const productsCardSlice = createSlice({
+  name: 'productsCard',
+  initialState: initialProductsCard,
+  reducers: {
+    setProductsCard: (state, action) => {
+      const newProduct = action.payload;
+
+      // Helper function to compare arrays (e.g., variations, extras, addons, excludes)
+      const areArraysEqual = (arr1, arr2, key = 'id') => {
+        if (arr1.length !== arr2.length) return false;
+        const sorted1 = [...arr1].sort((a, b) => (a[key] || a) - (b[key] || b));
+        const sorted2 = [...arr2].sort((a, b) => (a[key] || a) - (b[key] || b));
+        return sorted1.every((item, index) => {
+          if (typeof item === 'object') {
+            return JSON.stringify(item) === JSON.stringify(sorted2[index]);
+          }
+          return item === sorted2[index];
+        });
+      };
+
+      // Find an existing product with matching attributes
+      const existingProductIndex = state.data.findIndex((product) => {
+        return (
+          product.productId === newProduct.productId &&
+          areArraysEqual(product.variations, newProduct.variations, 'variation_id') &&
+          areArraysEqual(product.extraProduct, newProduct.extraProduct, 'id') &&
+          areArraysEqual(product.extraOptions, newProduct.extraOptions, 'id') &&
+          areArraysEqual(product.excludes, newProduct.excludes) &&
+          areArraysEqual(product.addons, newProduct.addons, 'id') &&
+          product.note === newProduct.note
+        );
+      });
+
+      if (existingProductIndex !== -1) {
+        // If a matching product is found, increment its count and update prices
+        const existingProduct = state.data[existingProductIndex];
+        const newCount = existingProduct.count + newProduct.count;
+        state.data[existingProductIndex] = {
+          ...existingProduct,
+          count: newCount,
+          total: (parseFloat(existingProduct.total) + parseFloat(newProduct.total)).toFixed(2),
+          passProductPrice: (
+            (parseFloat(existingProduct.passProductPrice) * existingProduct.count +
+              parseFloat(newProduct.passProductPrice) * newProduct.count) / newCount
+          ).toFixed(2), // Average price per unit
+          passPrice: (
+            (parseFloat(existingProduct.passPrice) * existingProduct.count +
+              parseFloat(newProduct.passPrice) * newProduct.count) / newCount
+          ).toFixed(2), // Average base price per unit
+        };
+        console.log('Incremented quantity for existing product:', state.data[existingProductIndex]);
+      } else {
+        // If no match is found, append the new product
+        console.log('Adding new product to cart:', newProduct);
+        state.data = [...state.data, newProduct];
+      }
+    },
+    UpdateProductCard: (state, action) => {
+      console.log('Updating Products Card:', action.payload);
+      state.data = state.data.map((product) => {
+        if (product.numberId === action.payload.numberId) {
+          return { ...product, ...action.payload };
+        }
+        return product;
+      });
+    },
+    removeProductsCard: (state, action) => {
+      console.log('Before Remove:', state.data);
+      state.data = state.data.filter((product) => product.numberId !== action.payload);
+      console.log('After Remove:', state.data);
+    },
+    removeAllProductsCard: (state) => {
+      console.log('Removing All Products Card');
+      state.data = [];
+    },
+  },
 });
+
 /*  Products Filter */
 const productsFilterSlice = createSlice({
        name: "productsFilter",
@@ -261,33 +340,68 @@ const totalPriceSlice = createSlice({
        },
 });
 /* Order Slice */
-const orderSlice = createSlice({
-       name: "order",
-       initialState: initialOrder,
-       reducers: {
-              UpdateOrder: (state, action) => {
+// const orderSlice = createSlice({
+//        name: "order",
+//        initialState: initialOrder,
+//        reducers: {
+//               UpdateOrder: (state, action) => {
 
-                     console.log("Updating order:", action.payload);
-                     state.data = { ...state.data, ...action.payload }
-              },
-              removeOrder: (state) => {
-                     console.log("Removing Order");
-                     state.data = {
-                            notes: "",
-                            // date: "",
-                            payment_method_id: null,
-                            receipt: "",
-                            branch_id: null,
-                            amount: null,
-                            total_tax: null,
-                            total_discount: null,
-                            address_id: null,
-                            order_type: null,
-                            delivery_price: null,
-                            products: [],
-                     }; // Reset to initial structure
-              },
-       },
+//                      console.log("Updating order:", action.payload);
+//                      state.data = { ...state.data, ...action.payload }
+//               },
+//               removeOrder: (state) => {
+//                      console.log("Removing Order");
+//                      state.data = {
+//                             notes: "",
+//                             // date: "",
+//                             payment_method_id: null,
+//                             receipt: "",
+//                             branch_id: null,
+//                             amount: null,
+//                             total_tax: null,
+//                             total_discount: null,
+//                             address_id: null,
+//                             order_type: null,
+//                             delivery_price: null,
+//                             products: [],
+//                      }; // Reset to initial structure
+//               },
+//        },
+// });
+const orderSlice = createSlice({
+  name: "order",
+  initialState: initialOrder,
+  reducers: {
+    UpdateOrder: (state, action) => {
+      // Perform deep equality check to avoid unnecessary updates
+      const isEqual = (obj1, obj2) => {
+        return JSON.stringify(obj1) === JSON.stringify(obj2);
+      };
+
+      if (!isEqual(state.data, action.payload)) {
+        console.log("Updating order:", action.payload);
+        state.data = { ...state.data, ...action.payload };
+      } else {
+        console.log("No changes in order, skipping update");
+      }
+    },
+    removeOrder: (state) => {
+      console.log("Removing Order");
+      state.data = {
+        notes: "",
+        payment_method_id: null,
+        receipt: "",
+        branch_id: null,
+        amount: null,
+        total_tax: null,
+        total_discount: null,
+        address_id: null,
+        order_type: null,
+        delivery_price: null,
+        products: [],
+      };
+    },
+  },
 });
 /*  Orders */
 const ordersSlice = createSlice({

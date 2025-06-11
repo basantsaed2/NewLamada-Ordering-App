@@ -91,15 +91,15 @@ const CardItem = ({ product, index }) => {
                             {product?.discount?.type === 'precentage' ? (
                                    <>
                                           <span className="text-xl text-mainColor font-TextFontMedium">
-                                                 {(product?.price - (product?.price * (product?.discount?.amount || 0) / 100)).toFixed(2)} EGP
+                                                 {(product?.price - (product?.price * (product?.discount?.amount || 0) / 100)).toFixed(2)} {t('EGP')}
                                           </span>
                                           <span className="text-xl line-through text-secoundColor font-TextFontMedium decoration-secoundColor">
-                                                 {product?.price?.toFixed(2) || '0.00'} EGP
+                                                 {product?.price?.toFixed(2) || '0.00'} {t('EGP')}
                                           </span>
                                    </>
                             ) : (
                                    <span className="text-xl text-mainColor font-TextFontMedium">
-                                          {product?.price?.toFixed(2) || '0.00'} EGP
+                                          {product?.price?.toFixed(2) || '0.00'} {t('EGP')}
                                    </span>
                             )}
 

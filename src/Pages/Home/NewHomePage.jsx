@@ -24,7 +24,7 @@ const NewHomePage=()=>{
 
             <div className={`w-full md:w-1/2 h-full flex flex-col gap-3 p-2 md:p-4 items-center justify-center`}>
                 <div className="flex gap-5">
-                    <Link to="/Lamada_menu" className="bg-[#c3171c1A] flex flex-col gap-3  items-center justify-center rounded-xl p-2 md:p-6">
+                    <Link to="/Lamada_menu" className="bg-[#d7030b1A] flex flex-col gap-3  items-center justify-center rounded-xl p-2 md:p-6">
                         <MenuIcon/>
                         <h1 className="text-2xl text-mainColor">{t("Menu")}</h1>
                     </Link>
@@ -35,16 +35,15 @@ const NewHomePage=()=>{
                 </div>
 
                 <div className="flex gap-1 p-4 pb-0">
-                    <Link to="https://apps.apple.com/eg/app/lamada/id6553989792" target='_blank' className="opacity-50 cursor-not-allowed">
+                    <Link to="https://drive.google.com/file/d/17ltn7x_qAqFzyofpvOEqtCLElFztwiIU/view?usp=sharing" target='_blank' className="">
                         <GooglePlayIcon/>
                     </Link>
-                    <Link to="#" className="opacity-50 cursor-not-allowed">
+                    <Link to="https://apps.apple.com/eg/app/lamada/id6553989792" target='_blank' className="">
                         <AppleIcon/>
                     </Link>      
                 </div>
             </div>
         </div>
-
         <Link to="https://food2go.online/" target="_blank" className="flex items-center justify-center gap-2">
             <h1 className="text-gray-600">{t("Poweredby")}</h1>
             <img src={mainLogo} className="w-16 h-16" alt="Main Logo" />

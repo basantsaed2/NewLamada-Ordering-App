@@ -279,29 +279,69 @@
 // };
 
 // export default CategoriesNavSection;
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
-import { setProductsFilter } from '../../../Store/CreateSlices';
 import { Banners } from '../../page';
 import Image from '../../../assets/Images/IconNavFilter.png';
+import { setCategories, setProducts, setProductsDiscount, setProductsDiscountFilter, setProductsFilter, setTaxType } from './../../../Store/CreateSlices';
+import { useGet } from '../../../Hooks/useGet';
+import { StaticSpinner } from '../../../Components/Components';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 
 const CategoriesNavSection = () => {
+  const { t } = useTranslation(); // Get the t function for translations
   const dispatch = useDispatch();
-  const categories = useSelector((state) => state.categories?.data);
-  const products = useSelector((state) => state.products?.data);
+  const categories = useSelector((state) => state.categories?.data || []);
+  const selectedLanguage = useSelector((state) => state.language?.selected ?? 'en');
+  const order = useSelector((state) => state?.order?.data || {});
+  const [canNavigate, setCanNavigate] = useState(false);
 
-  // Initialize state from localStorage if available
+  // Construct API URL dynamically
+  const key = order.branch_id ? 'branch_id' : 'address_id';
+  const value = order.branch_id || order.address_id || '';
+  const apiUrl = `https://Lamadafoodbcknd.food2go.online/customer/home/web_products?${key}=${value}&locale=${selectedLanguage}`;
+
+  const {
+    refetch: refetchProducts,
+    loading: loadingProducts,
+    data: dataProducts,
+  } = useGet({
+    url: apiUrl,
+    skip: !value,
+  });
+
+  // Refetch products when value or selectedLanguage changes
+  useEffect(() => {
+    if (value) {
+      refetchProducts();
+    }
+  }, [value, selectedLanguage, refetchProducts]);
+
+  // Update Redux store with fetched data
+  useEffect(() => {
+    if (dataProducts && value) {
+      console.log('dataProducts:', dataProducts);
+      dispatch(setTaxType(dataProducts?.tax || null));
+      dispatch(setProducts(dataProducts?.products || []));
+      dispatch(setProductsFilter(dataProducts?.products || []));
+      dispatch(setCategories(dataProducts?.categories || []));
+      dispatch(setProductsDiscount(dataProducts?.discounts || []));
+      dispatch(setProductsDiscountFilter(dataProducts?.discounts || []));
+      setCanNavigate(true);
+    }
+  }, [dataProducts, dispatch, value]);
+
+  // Initialize state from localStorage
   const [activeTab, setActiveTab] = useState(() => {
     const saved = localStorage.getItem('activeCategory');
-    return saved || 'Recommended Product'; // Default to 'Recommended'
+    return saved || t('RecommendedProduct'); // Use translated string
   });
 
   const [activeTabImage, setActiveTabImage] = useState(() => {
     const saved = localStorage.getItem('activeCategoryImage');
-    return saved || Image; // Default to IconNavFilter.png for Recommended
+    return saved || Image;
   });
 
   const [activeSubTab, setActiveSubTab] = useState(() => {
@@ -315,46 +355,43 @@ const CategoriesNavSection = () => {
 
   // Define the synthetic "Recommended" category
   const recommendedCategory = {
-    name: 'Recommended Product',
+    name: t('RecommendedProduct'), // Use translated string
     image_link: Image,
-    id: 'recommended', // Unique ID for filtering
-    sub_categories: [], // No subcategories for Recommended
+    id: 'recommended',
+    sub_categories: [],
   };
 
-  // Update categories when Redux state changes
+  // Update categoriesFilter when categories change
   useEffect(() => {
-    setCategoriesFilter([recommendedCategory, ...categories]);
-  }, [categories]);
+    setCategoriesFilter([recommendedCategory, ...(categories || [])]);
+  }, [categories, t]); // Add t to dependencies to update when language changes
 
+  // Handle initial category selection
   useEffect(() => {
     if (categories && categories.length > 0) {
-      if (!activeTab || activeTab === 'Recommended Product') {
-        // Set Recommended as default if no saved category or explicitly Recommended
-        setActiveTab('Recommended Product');
+      if (!activeTab || activeTab === t('RecommendedProduct')) {
+        setActiveTab(t('RecommendedProduct'));
         setActiveTabImage(Image);
         handleCategoryClick(recommendedCategory);
       } else {
-        // Find the saved category and set it
-        const savedCategory = categories.find(cat => cat.name === activeTab);
+        const savedCategory = categories.find((cat) => cat.name === activeTab);
         if (savedCategory) {
           setActiveTabImage(savedCategory.image_link || Image);
           handleCategoryClick(savedCategory);
         } else {
-          // Fallback to Recommended if saved category not found
-          setActiveTab('Recommended Product');
+          setActiveTab(t('RecommendedProduct'));
           setActiveTabImage(Image);
           handleCategoryClick(recommendedCategory);
         }
       }
     } else {
-      // If no categories, default to Recommended
-      setActiveTab('Recommended Product');
+      setActiveTab(t('RecommendedProduct'));
       setActiveTabImage(Image);
       handleCategoryClick(recommendedCategory);
     }
-  }, [categories]);
+  }, [categories, t]); // Add t to dependencies
 
-  // Save selections to localStorage when they change
+  // Save selections to localStorage
   useEffect(() => {
     localStorage.setItem('activeCategory', activeTab);
     localStorage.setItem('activeCategoryImage', activeTabImage);
@@ -369,11 +406,11 @@ const CategoriesNavSection = () => {
     const updateItemsPerSlide = () => {
       const width = window.innerWidth;
       if (width >= 1280) {
-        setItemsPerSlide(16); // 2 rows x 8 columns for big screens
+        setItemsPerSlide(16);
       } else if (width >= 640 && width <= 1280) {
-        setItemsPerSlide(12); // For medium screens: grid designed for 6 items per slide
+        setItemsPerSlide(12);
       } else {
-        setItemsPerSlide(8); // For small screens: grid designed for 4 items per slide
+        setItemsPerSlide(8);
       }
     };
     updateItemsPerSlide();
@@ -382,6 +419,7 @@ const CategoriesNavSection = () => {
   }, []);
 
   const handleCategoryClick = (category) => {
+    if (!dataProducts || !dataProducts.products) return;
     setActiveTab(category?.name);
     setActiveTabImage(category.image_link);
     setActiveSubTab(null);
@@ -389,7 +427,7 @@ const CategoriesNavSection = () => {
       setSubCategories(category.sub_categories);
       const savedSubCategory = localStorage.getItem('activeSubCategory');
       if (savedSubCategory) {
-        const subCat = category.sub_categories.find(sc => sc.name === savedSubCategory);
+        const subCat = category.sub_categories.find((sc) => sc.name === savedSubCategory);
         if (subCat) {
           setTimeout(() => {
             handleSubCategoryClick(subCat);
@@ -403,29 +441,24 @@ const CategoriesNavSection = () => {
   };
 
   const handleSubCategoryClick = (subCategory) => {
+    if (!dataProducts || !dataProducts.products) return;
     setActiveSubTab(subCategory?.name);
     filterProduct(subCategory.category_id, subCategory.id);
   };
 
   const filterProduct = (categoryId, subCategoryId) => {
-    let filteredProducts = products;
+    if (!dataProducts || !dataProducts.products || loadingProducts) return;
+    let filteredProducts = dataProducts.products;
     if (categoryId === 'recommended') {
-      filteredProducts = filteredProducts.filter(product => product.recommended === 1);
+      filteredProducts = filteredProducts.filter((product) => product.recommended === 1);
     } else if (categoryId) {
-      filteredProducts = filteredProducts.filter(
-        (product) => product.category_id === categoryId
-      );
+      filteredProducts = filteredProducts.filter((product) => product.category_id === categoryId);
     }
     if (subCategoryId) {
-      filteredProducts = filteredProducts.filter(
-        (product) => product.sub_category_id === subCategoryId
-      );
+      filteredProducts = filteredProducts.filter((product) => product.sub_category_id === subCategoryId);
     }
     dispatch(setProductsFilter(filteredProducts));
   };
-
-  // Combine the "Recommended" category with the rest of the categories
-  const allCategories = [...categoriesFilter];
 
   // Group categories into chunks based on itemsPerSlide
   const groupCategoriesByChunk = (categories, chunkSize) => {
@@ -436,14 +469,18 @@ const CategoriesNavSection = () => {
     return groups;
   };
 
-  const groupedCategories = groupCategoriesByChunk(allCategories, itemsPerSlide);
+  const groupedCategories = groupCategoriesByChunk(categoriesFilter, itemsPerSlide);
+
+  if (loadingProducts || !dataProducts) {
+    return <StaticSpinner />;
+  }
 
   return (
     <div className="flex flex-col items-center w-screen gap-2">
       <Banners />
 
       {/* Categories Slider */}
-      <div className="w-full">
+      <div className="w-full" dir={selectedLanguage === 'ar' ? 'rtl' : 'ltr'}>
         <Splide
           options={{
             type: 'slide',
@@ -455,6 +492,7 @@ const CategoriesNavSection = () => {
             interval: 6000,
             pauseOnHover: true,
             padding: '5%',
+            direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr',
           }}
           className="w-full"
         >
@@ -497,14 +535,12 @@ const CategoriesNavSection = () => {
             className="object-cover w-12 h-12 rounded-full"
           />
         </div>
-        <h1 className="text-xl font-extrabold tracking-wide text-mainColor">
-          {activeTab}
-        </h1>
+        <h1 className="text-xl font-extrabold tracking-wide text-mainColor">{activeTab}</h1>
       </div>
 
       {/* Subcategories Slider */}
       {subCategories.length > 0 && (
-        <div className="w-full">
+        <div className="w-full" dir={selectedLanguage === 'ar' ? 'rtl' : 'ltr'}>
           <Splide
             options={{
               type: 'slide',
@@ -522,6 +558,7 @@ const CategoriesNavSection = () => {
                 768: { perPage: 2 },
                 480: { perPage: 2 },
               },
+              direction: selectedLanguage === 'ar' ? 'rtl' : 'ltr',
             }}
             className="w-full"
           >

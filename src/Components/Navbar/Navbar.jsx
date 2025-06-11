@@ -33,7 +33,6 @@ const Navbar = () => {
     }, [selectedLanguage, i18n]); // Add i18n to the dependencies to ensure proper updating
 
     const handleLanguageChange = (e) => {
-        console.log("Language changed to:", e.target.value);
         const newLang = e.target.value;
         dispatch(setLanguage(newLang));  // Update Redux store with the new language
     };
@@ -112,7 +111,7 @@ const Navbar = () => {
                             <FaGlobe className="w-5 h-5 text-mainColor" />
                             {languages.length > 0 ? (
                                 <select
-                                    onChange={handleLanguageChange}
+                                    onChange={(e) => dispatch(setLanguage(e.target.value))}
                                     value={selectedLanguage || 'en'}
                                     className="font-medium bg-transparent cursor-pointer text-mainColor focus:outline-none text-md"
                                 >

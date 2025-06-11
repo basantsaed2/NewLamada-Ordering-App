@@ -58,8 +58,8 @@ const SignUpPage = () => {
                      auth.toastError("Please Enter Your Last Name.");
                      return;
               }
-              if (!phone) {
-                     auth.toastError("Please Enter Your Phone.");
+              if (phone.length < 11) {
+                     auth.toastError("Please Enter Vaild Phone.");
                      return;
               }
               if (!email) {

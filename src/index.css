@@ -44,7 +44,7 @@
 }
 
 .scrollPage::-webkit-scrollbar-thumb {
-  background-color: #c3171c;
+  background-color: #d7030b;
   border-radius: 10px;
 }
 
@@ -79,14 +79,14 @@ nav .active:hover::before {
 }
 
 .categories .active {
-  background-color: #c3171c;
+  background-color: #d7030b;
   color: #fff;
 }
 
 ;
 
 .offers .active {
-  background-color: #c3171c;
+  background-color: #d7030b;
   color: #fff;
 }
 
@@ -134,16 +134,16 @@ nav .active:hover::before {
 
 .radio-button__input:checked+.radio-button__label .radio-button__custom {
   transform: translateY(-50%) scale(0.9);
-  border: 5px solid #c3171c;
-  color: #c3171c;
+  border: 5px solid #d7030b;
+  color: #d7030b;
 }
 
 .radio-button__input:checked+.radio-button__label {
-  color: #c3171c;
+  color: #d7030b;
 }
 
 .radio-button__label:hover .radio-button__custom {
   transform: translateY(-50%) scale(1.2);
-  border-color: #c3171c;
-  box-shadow: 0 0 10px #c3171c;
+  border-color: #d7030b;
+  box-shadow: 0 0 10px #d7030b;
 }

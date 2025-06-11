@@ -7,7 +7,7 @@ const CustomSpinner = ({ mt = 32 }) => {
               <>
                      <div className={`w-full h-full flex flex-col justify-start mt-${mt} items-center`}>
                             <RedLogo width={250} height={250} />
-                            <PulseLoader color='#c3171c' size={20} />
+                            <PulseLoader color='#d7030b' size={20} />
                      </div>
               </>
        )
